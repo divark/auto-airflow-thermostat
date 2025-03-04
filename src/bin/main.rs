@@ -34,7 +34,7 @@ fn main() -> ! {
     .unwrap();
 
     loop {
-        info!("Hello world!");
+        info!("Hello you!");
         let delay_start = Instant::now();
         while delay_start.elapsed() < Duration::from_millis(500) {}
     }
