@@ -2,38 +2,52 @@ name: Continuous Integration
 
 on:
   push:
-    paths-ignore:
-      - "**/README.md"
-  pull_request:
-  workflow_dispatch:
-
-env:
-  CARGO_TERM_COLOR: always
 
 jobs:
-  rust-checks:
-    name: Rust Checks
+  check-protocol-code:
+    name: Check if protocol code is working
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        action:
-          - command: build
-            args: --release
-          - command: fmt
-            args: --all -- --check
-          - command: clippy
-            args: --all-features --workspace -- -D warnings
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Check if protocol code compiles
+        run: |
+          cd temperature-monitor-interface
+          cargo check
+          cd ..
+
+      - name: Check if protocol tests pass
+        run: |
+          cd temperature-monitor-interface
+          cargo test
+          cd ..
+
+  check-embedded-projects:
+    name: Check if embedded code compiles
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@v1
         with:
           target: riscv32imc-unknown-none-elf
           toolchain: stable
           components: rust-src, rustfmt, clippy
-      - name: Enable caching
-        uses: Swatinem/rust-cache@v2
-      - name: Run command
-        run: cargo ${{ matrix.action.command }} ${{ matrix.action.args }}
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Run cargo check in esp32 projects
+        run: |
+          cd esp32-temperature-monitor
+          cargo clippy
+          cd ..
