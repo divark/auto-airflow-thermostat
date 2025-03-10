@@ -7,13 +7,11 @@ use temperature_monitor_interface::{Bit, BitReader};
 /// of bits could be coming in from any source.
 struct TestBitReader {
     number: usize,
-
-    bit_idx: usize,
 }
 
 impl TestBitReader {
     pub fn new(number: usize) -> Self {
-        Self { number, bit_idx: 0 }
+        Self { number }
     }
 }
 
