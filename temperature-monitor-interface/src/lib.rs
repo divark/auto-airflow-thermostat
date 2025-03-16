@@ -5,7 +5,7 @@ pub enum Bit {
 }
 
 pub trait BitReader {
-    fn read_next_bit(&mut self) -> Option<Bit>;
+    fn read_next_bit(&mut self) -> Bit;
 }
 
 pub enum Endian {
@@ -21,6 +21,26 @@ where
     bit_reader: U,
 }
 
+/// Returns a byte where a bit has been added onto it,
+/// depending on the Endian-ness.
+fn add_bit_to(byte: u8, bit_read: u8, order: &Endian) -> u8 {
+    let mut new_byte = byte;
+    match order {
+        Endian::Little => new_byte |= bit_read << 7,
+        Endian::Big => new_byte |= bit_read,
+    }
+
+    new_byte
+}
+
+/// Returns a Bit read as a unsigned integer.
+fn bit_to_number(read_bit: Bit) -> u8 {
+    match read_bit {
+        Bit::Zero => 0,
+        Bit::One => 1,
+    }
+}
+
 impl<U> ByteReader<U>
 where
     U: BitReader,
@@ -34,23 +54,14 @@ where
 
         let num_bits = 8;
         for _i in 0..num_bits - 1 {
-            let bit_read = match self.bit_reader.read_next_bit() {
-                Some(Bit::Zero) => 0,
-                None => 0,
-                Some(Bit::One) => 1,
-            };
+            let bit_read = bit_to_number(self.bit_reader.read_next_bit());
 
-            byte_read |= bit_read << 7;
+            byte_read = add_bit_to(byte_read, bit_read, order);
             byte_read = byte_read >> 1;
         }
 
-        let bit_read = match self.bit_reader.read_next_bit() {
-            Some(Bit::Zero) => 0,
-            None => 0,
-            Some(Bit::One) => 1,
-        };
-
-        byte_read |= bit_read << 7;
+        let bit_read = bit_to_number(self.bit_reader.read_next_bit());
+        byte_read = add_bit_to(byte_read, bit_read, order);
 
         byte_read
     }

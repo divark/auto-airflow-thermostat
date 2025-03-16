@@ -17,9 +17,9 @@ impl TestBitReader {
 }
 
 impl BitReader for TestBitReader {
-    fn read_next_bit(&mut self) -> Option<Bit> {
+    fn read_next_bit(&mut self) -> Bit {
         if self.number == 0 {
-            return None;
+            return Bit::Zero;
         }
 
         let mask = 1;
@@ -27,8 +27,8 @@ impl BitReader for TestBitReader {
         self.number = self.number >> 1;
 
         match read_bit {
-            0 => Some(Bit::Zero),
-            1 => Some(Bit::One),
+            0 => Bit::Zero,
+            1 => Bit::One,
             _ => panic!("read_next_bit: Masking failed. A number was found greater than 1."),
         }
     }
@@ -50,7 +50,7 @@ fn number_read_for_bits(test_env: &mut TestingEnvironment, num_bits_to_read: usi
     let mut bit_reader = TestBitReader::new(test_env.number);
 
     for _i in 0..num_bits_to_read {
-        test_env.bits_read.push(bit_reader.read_next_bit().unwrap());
+        test_env.bits_read.push(bit_reader.read_next_bit());
     }
 }
 
