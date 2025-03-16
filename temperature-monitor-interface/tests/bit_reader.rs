@@ -5,7 +5,8 @@ use temperature_monitor_interface::{Bit, BitReader};
 /// What's more important is that the interface
 /// behaves as-intended, since this sequence
 /// of bits could be coming in from any source.
-struct TestBitReader {
+#[derive(Debug, Default, Clone)]
+pub struct TestBitReader {
     number: usize,
 }
 
@@ -16,9 +17,9 @@ impl TestBitReader {
 }
 
 impl BitReader for TestBitReader {
-    fn read_next_bit(&mut self) -> Bit {
+    fn read_next_bit(&mut self) -> Option<Bit> {
         if self.number == 0 {
-            return Bit::Zero;
+            return None;
         }
 
         let mask = 1;
@@ -26,15 +27,15 @@ impl BitReader for TestBitReader {
         self.number = self.number >> 1;
 
         match read_bit {
-            0 => Bit::Zero,
-            1 => Bit::One,
+            0 => Some(Bit::Zero),
+            1 => Some(Bit::One),
             _ => panic!("read_next_bit: Masking failed. A number was found greater than 1."),
         }
     }
 }
 
 #[derive(Debug, Default, World)]
-pub struct TestingEnvironment {
+struct TestingEnvironment {
     number: usize,
     bits_read: Vec<Bit>,
 }
@@ -49,7 +50,7 @@ fn number_read_for_bits(test_env: &mut TestingEnvironment, num_bits_to_read: usi
     let mut bit_reader = TestBitReader::new(test_env.number);
 
     for _i in 0..num_bits_to_read {
-        test_env.bits_read.push(bit_reader.read_next_bit());
+        test_env.bits_read.push(bit_reader.read_next_bit().unwrap());
     }
 }
 

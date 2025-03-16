@@ -12,3 +12,7 @@ futures = "^0.3"
 [[test]]
 name = "bit_reader"
 harness = false
+
+[[test]]
+name = "byte_reader"
+harness = false
