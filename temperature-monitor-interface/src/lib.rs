@@ -5,7 +5,7 @@ pub enum Bit {
 }
 
 pub trait BitReader {
-    fn read_next_bit(&mut self) -> Bit;
+    fn read_next_bit(&mut self) -> Option<Bit>;
 }
 
 pub enum Endian {
@@ -41,6 +41,17 @@ fn bit_to_number(read_bit: Bit) -> u8 {
     }
 }
 
+/// Returns a Byte shifted in either big or little endian.
+fn shift_byte(byte_read: u8, order: &Endian) -> u8 {
+    let mut byte_shifted = byte_read;
+    byte_shifted = match order {
+        Endian::Little => byte_shifted >> 1,
+        Endian::Big => byte_shifted << 1,
+    };
+
+    byte_shifted
+}
+
 impl<U> ByteReader<U>
 where
     U: BitReader,
@@ -53,15 +64,38 @@ where
         let mut byte_read = 0;
 
         let num_bits = 8;
-        for _i in 0..num_bits - 1 {
-            let bit_read = bit_to_number(self.bit_reader.read_next_bit());
+        let mut num_bits_read = 0;
+        for _i in 0..num_bits {
+            let bit_read = self.bit_reader.read_next_bit();
+            if bit_read.is_none() {
+                break;
+            }
+
+            let bit_read = bit_to_number(bit_read.unwrap());
+            num_bits_read += 1;
 
             byte_read = add_bit_to(byte_read, bit_read, order);
-            byte_read = byte_read >> 1;
+            if num_bits_read == num_bits - 1 {
+                break;
+            }
+
+            byte_read = shift_byte(byte_read, order);
         }
 
-        let bit_read = bit_to_number(self.bit_reader.read_next_bit());
-        byte_read = add_bit_to(byte_read, bit_read, order);
+        if let Endian::Big = order {
+            return byte_read;
+        }
+
+        // For Little-endian bit-reading, we prepend every bit at
+        // the beginning (left side) of a byte to honor the ordering, but this
+        // results in a larger number than read.
+        //
+        // Because of this, we have to scoot all of the bits read so far
+        // down to the end (right side) of the byte.
+        let shifts_left_to_do = (num_bits - 1) - num_bits_read;
+        for _i in 0..shifts_left_to_do {
+            byte_read = shift_byte(byte_read, order);
+        }
 
         byte_read
     }

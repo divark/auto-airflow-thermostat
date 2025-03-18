@@ -22,9 +22,14 @@ fn given_byte_reader(test_env: &mut TestingEnvironment) {
     test_env.byte_reader = Some(ByteReader::new(test_env.bit_reader.clone()));
 }
 
-#[when("a byte is read in little-endian,")]
-fn read_byte(test_env: &mut TestingEnvironment) {
-    let reading_order = Endian::Little;
+#[when(regex = r"a byte is read in (little|big)-endian,")]
+fn read_byte(test_env: &mut TestingEnvironment, endian: String) {
+    let reading_order = match endian.as_str() {
+        "little" => Endian::Little,
+        "big" => Endian::Big,
+        _ => panic!("read_byte: Invalid endian option provided."),
+    };
+
     test_env.byte_read = test_env.byte_reader.as_mut().unwrap().read(&reading_order);
 }
 
