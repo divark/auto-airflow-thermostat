@@ -4,6 +4,8 @@ fs = import('fs')
 
 wokwi_simulator = find_program('wokwi-cli')
 
+run_command('cargo', 'build')
+
 wokwi_token_file = files('wokwi-token.txt')
 wokwi_token = fs.read(wokwi_token_file).strip()
 wokwi_token_env_var = {'WOKWI_CLI_TOKEN': wokwi_token}
