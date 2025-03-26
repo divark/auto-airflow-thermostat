@@ -804,6 +804,7 @@ dependencies = [
  "heapless",
  "log",
  "smoltcp",
+ "temperature-monitor-interface",
 ]
 
 [[package]]

@@ -8,6 +8,8 @@ name = "esp32-temperature-monitor"
 path = "./src/bin/main.rs"
 
 [dependencies]
+temperature-monitor-interface = { path = "../temperature-monitor-interface" }
+
 critical-section = "1.2.0"
 embassy-net = { version = "0.6.0", features = [
     "dhcpv4",

@@ -1,6 +1,7 @@
 #![no_std]
 #![no_main]
 
+use esp32_temperature_monitor::temperature::station::Esp32TemperatureStation;
 use esp_hal::clock::CpuClock;
 use esp_hal::main;
 use esp_hal::time::{Duration, Instant};
@@ -32,6 +33,9 @@ fn main() -> ! {
         peripherals.RADIO_CLK,
     )
     .unwrap();
+
+    let connector = peripherals.GPIO0;
+    let mut temperature_monitor = Esp32TemperatureStation::new(connector);
 
     loop {
         info!("Hello you!");
