@@ -1,8 +1,12 @@
 #![no_std]
 #![no_main]
 
-use esp32_temperature_monitor::temperature::station::Esp32TemperatureStation;
+use esp32_temperature_monitor::temperature::station::{
+    Esp32TemperatureStation, TemperatureStation,
+};
+use esp32_temperature_monitor::temperature::TemperatureUnit;
 use esp_hal::clock::CpuClock;
+use esp_hal::gpio::Flex;
 use esp_hal::main;
 use esp_hal::time::{Duration, Instant};
 use esp_hal::timer::timg::TimerGroup;
@@ -34,11 +38,18 @@ fn main() -> ! {
     )
     .unwrap();
 
-    let connector = peripherals.GPIO0;
-    let mut temperature_monitor = Esp32TemperatureStation::new(connector);
+    let temperature_reading_pin = peripherals.GPIO0;
+
+    let pin_communicator = Flex::new(temperature_reading_pin);
+    let mut temperature_monitor = Esp32TemperatureStation::new(pin_communicator);
+
+    let temperature_units = TemperatureUnit::Fahrenheit;
 
     loop {
-        info!("Hello you!");
+        info!(
+            "Temperature: {}F",
+            temperature_monitor.get_temperature(&temperature_units)
+        );
         let delay_start = Instant::now();
         while delay_start.elapsed() < Duration::from_millis(500) {}
     }
