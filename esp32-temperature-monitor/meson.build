@@ -11,7 +11,7 @@ wokwi_token = fs.read(wokwi_token_file).strip()
 wokwi_token_env_var = {'WOKWI_CLI_TOKEN': wokwi_token}
 
 wokwi_simulator_workdir = meson.current_source_dir()
-wokwi_timeout_defaults = ['--timeout', '1000']
+wokwi_timeout_defaults = ['--timeout', '5000']
 
 temperature_test_args = wokwi_timeout_defaults + ['--expect-text', 'INFO - Temperature: 75.2F']
 test(

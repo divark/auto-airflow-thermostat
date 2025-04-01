@@ -47,7 +47,7 @@ fn main() -> ! {
 
     loop {
         info!(
-            "Temperature: {}F",
+            "Temperature: {:.1}F",
             temperature_monitor.get_temperature(&temperature_units)
         );
         let delay_start = Instant::now();
