@@ -39,17 +39,15 @@ fn main() -> ! {
     .unwrap();
 
     let temperature_reading_pin = peripherals.GPIO0;
-
     let pin_communicator = Flex::new(temperature_reading_pin);
     let mut temperature_monitor = Esp32TemperatureStation::new(pin_communicator);
 
     let temperature_units = TemperatureUnit::Fahrenheit;
 
     loop {
-        info!(
-            "Temperature: {:.1}F",
-            temperature_monitor.get_temperature(&temperature_units)
-        );
+        let temperature = temperature_monitor.get_temperature(&temperature_units);
+        info!("Temperature: {:.1}F", temperature);
+
         let delay_start = Instant::now();
         while delay_start.elapsed() < Duration::from_millis(500) {}
     }

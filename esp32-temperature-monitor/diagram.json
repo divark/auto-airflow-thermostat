@@ -1,21 +1,22 @@
 {
-    "version": 1,
-    "author": "Anonymous maker",
-    "editor": "wokwi",
-    "parts": [ { "id": "esp", "type": "board-esp32-c3-devkitm-1" },
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "id": "esp", "type": "board-esp32-c3-devkitm-1" },
     {
       "type": "wokwi-dht22",
       "id": "dht1",
       "top": -166.23333740234375,
       "left": -255.33333333333331,
-      "attrs": {}
+      "attrs": { "builder": "rust-nostd-esp" }
     }
   ],
-    "connections": [
-    [ "esp:TX", "$serialMonitor:RX", "", [] ],
-    [ "esp:RX", "$serialMonitor:TX", "", [] ],
-    [ "dht1:GND", "esp:GND.1", "black", [ "v0" ] ],
-    [ "dht1:VCC", "esp:3V3.1", "red", [ "v0" ] ],
-    [ "dht1:SDA", "esp:0", "green", [ "v0" ] ]
+  "connections": [
+    ["esp:TX", "$serialMonitor:RX", "", []],
+    ["esp:RX", "$serialMonitor:TX", "", []],
+    ["dht1:GND", "esp:GND.1", "black", ["v0"]],
+    ["dht1:VCC", "esp:3V3.1", "red", ["v0"]],
+    ["dht1:SDA", "esp:0", "green", ["v0"]]
   ]
-  }
+}
