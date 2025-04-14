@@ -10,39 +10,14 @@ path = "./src/bin/main.rs"
 [dependencies]
 temperature-monitor-interface = { path = "../temperature-monitor-interface" }
 
-critical-section = "1.2.0"
-embassy-net = { version = "0.6.0", features = [
-    "dhcpv4",
-    "medium-ethernet",
-    "tcp",
-    "udp",
-] }
-embedded-io = "0.6.1"
-embedded-hal = "1.0.0"
-esp-alloc = "0.7.0"
-esp-hal = { version = "1.0.0-beta.0", features = ["esp32c3", "unstable"] }
-esp-println = { version = "0.13.0", features = ["esp32c3", "log"] }
-esp-wifi = { version = "0.13.0", features = [
-    "builtin-scheduler",
-    "esp-alloc",
+esp-hal = { version = "0.23.1", features = ["esp32c3"] }
+esp-backtrace = { version = "0.15.0", features = [
     "esp32c3",
-    "log",
-    "wifi",
+    "panic-handler",
+    "println",
 ] }
-heapless = { version = "0.8.0", default-features = false }
-log = { version = "0.4.21" }
-smoltcp = { version = "0.12.0", default-features = false, features = [
-    "medium-ethernet",
-    "multicast",
-    "proto-dhcpv4",
-    "proto-dns",
-    "proto-ipv4",
-    "socket-dns",
-    "socket-icmp",
-    "socket-raw",
-    "socket-tcp",
-    "socket-udp",
-] }
+esp-println = { version = "0.13.0", features = ["esp32c3", "log"] }
+log = { version = "0.4.22" }
 
 [profile.dev]
 # Rust debug is too slow.
