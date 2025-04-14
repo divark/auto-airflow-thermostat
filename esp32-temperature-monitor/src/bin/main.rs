@@ -6,6 +6,7 @@ use esp32_temperature_monitor::temperature::station::{
 };
 use esp32_temperature_monitor::temperature::TemperatureUnit;
 use esp_hal::clock::CpuClock;
+use esp_hal::delay::Delay;
 use esp_hal::gpio::{Level, OutputOpenDrain, Pull};
 use esp_hal::main;
 use esp_hal::time::{Duration, Instant};
@@ -26,6 +27,8 @@ fn main() -> ! {
     let config = esp_hal::Config::default().with_cpu_clock(CpuClock::max());
     let peripherals = esp_hal::init(config);
 
+    let mut delay = Delay::new();
+
     let temperature_reading_pin = peripherals.GPIO0;
     let pin_communicator = OutputOpenDrain::new(temperature_reading_pin, Level::High, Pull::None);
     let mut temperature_monitor = Esp32TemperatureStation::new(pin_communicator);
@@ -33,6 +36,8 @@ fn main() -> ! {
     let temperature_units = TemperatureUnit::Fahrenheit;
 
     loop {
+        delay.delay(Duration::secs(5));
+
         let temperature = temperature_monitor.get_temperature(&temperature_units);
         info!("Temperature: {:.1}F", temperature);
     }
