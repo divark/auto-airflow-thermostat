@@ -455,6 +455,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "embedded-dht-rs"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fbfc523590c7a10e16f279a30c77137a6688010062b7a04aede6a584ddb55dd2"
+dependencies = [
+ "embedded-hal 1.0.0",
+]
+
+[[package]]
 name = "embedded-hal"
 version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -705,6 +714,7 @@ dependencies = [
 name = "esp32-temperature-monitor"
 version = "0.1.0"
 dependencies = [
+ "embedded-dht-rs",
  "esp-backtrace",
  "esp-hal",
  "esp-println",

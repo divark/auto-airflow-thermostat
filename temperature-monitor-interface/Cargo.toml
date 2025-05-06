@@ -10,9 +10,5 @@ cucumber = "^0.20"
 futures = "^0.3"
 
 [[test]]
-name = "bit_reader"
-harness = false
-
-[[test]]
-name = "byte_reader"
+name = "temperature_reading"
 harness = false
