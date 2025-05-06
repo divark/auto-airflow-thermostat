@@ -2,21 +2,11 @@ use cucumber::{World, given, then, when};
 
 use temperature_monitor_interface::{Temperature, TemperatureReading, TemperatureUnits};
 
-fn round_float_to_two_decimal_places(number: f32) -> f32 {
-    (number * 100.0).round() / 100.0
-}
-
 fn round_to_two_decimal_places(temperature: Temperature) -> Temperature {
-    match temperature {
-        Temperature::Celsius(celsius_temperature) => {
-            let rounded_celsius_temp = round_float_to_two_decimal_places(celsius_temperature);
-            Temperature::Celsius(rounded_celsius_temp)
-        }
-        Temperature::Fahrenheit(fahrenheit_temperature) => {
-            let rounded_fahrenheit_temp = round_float_to_two_decimal_places(fahrenheit_temperature);
-            Temperature::Fahrenheit(rounded_fahrenheit_temp)
-        }
-    }
+    let reading = temperature.get_reading();
+    let rounded_reading = (reading * 100.0).round() / 100.0;
+    let rounded_temperature = Temperature::new(*temperature.get_units(), rounded_reading);
+    rounded_temperature
 }
 
 #[derive(Debug)]
@@ -51,9 +41,12 @@ struct TestContext {
 impl Default for TestContext {
     fn default() -> Self {
         Self {
-            temperature_reader: TestTemperatureReader::new(Temperature::Celsius(0.0)),
+            temperature_reader: TestTemperatureReader::new(Temperature::new(
+                TemperatureUnits::Celsius,
+                0.0,
+            )),
 
-            temperature_read: Temperature::Celsius(0.0),
+            temperature_read: Temperature::new(TemperatureUnits::Celsius, 0.0),
         }
     }
 }
@@ -70,18 +63,19 @@ fn parse_temperature_units(temperature_units_specified: String) -> TemperatureUn
     parsed_temperature_units
 }
 
+fn parse_temperature(temperature_units_specified: String, desired_temperature: f32) -> Temperature {
+    let temperature_units = parse_temperature_units(temperature_units_specified);
+
+    Temperature::new(temperature_units, desired_temperature)
+}
+
 #[given(regex = r"an outside temperature of (.+) (.+),")]
 fn given_outside_temperature(
     test_context: &mut TestContext,
     outside_temperature: f32,
     outside_temp_units: String,
 ) {
-    let outside_temperature_units = parse_temperature_units(outside_temp_units);
-    let outside_temperature = match outside_temperature_units {
-        TemperatureUnits::Fahrenheit => Temperature::Fahrenheit(outside_temperature),
-        TemperatureUnits::Celsius => Temperature::Celsius(outside_temperature),
-    };
-
+    let outside_temperature = parse_temperature(outside_temp_units, outside_temperature);
     test_context.temperature_reader = TestTemperatureReader::new(outside_temperature);
 }
 
@@ -100,16 +94,7 @@ fn verify_temperature_in_celsius(
     expected_temperature: f32,
     temperature_units_specified: String,
 ) {
-    let temperature_units = parse_temperature_units(temperature_units_specified);
-
-    let expected_temperature = match temperature_units {
-        TemperatureUnits::Celsius => {
-            round_to_two_decimal_places(Temperature::Celsius(expected_temperature))
-        }
-        TemperatureUnits::Fahrenheit => {
-            round_to_two_decimal_places(Temperature::Fahrenheit(expected_temperature))
-        }
-    };
+    let expected_temperature = parse_temperature(temperature_units_specified, expected_temperature);
     let actual_temperature = test_context.temperature_read;
     assert_eq!(expected_temperature, actual_temperature);
 }
