@@ -20,6 +20,7 @@ esp-println = { version = "0.13.0", features = ["esp32c3", "log"] }
 log = { version = "0.4.22" }
 
 embedded-dht-rs = { version = "0.3.2", features = ["dht11"] }
+embedded-hal = "1.0.0"
 
 [profile.dev]
 # Rust debug is too slow.
