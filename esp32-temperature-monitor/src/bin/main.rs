@@ -10,7 +10,8 @@ use esp_hal::main;
 use esp_println::println;
 
 #[panic_handler]
-fn on_panic(_info: &PanicInfo) -> ! {
+fn on_panic(info: &PanicInfo) -> ! {
+    println!("Panicked! Info: {:?}", info);
     loop {}
 }
 
