@@ -19,7 +19,7 @@ impl Dht11TemperatureReader<'_> {
         let config = esp_hal::Config::default().with_cpu_clock(CpuClock::max());
         let peripherals = esp_hal::init(config);
 
-        let od_for_dht11 = OutputOpenDrain::new(peripherals.GPIO8, Level::High, Pull::None);
+        let od_for_dht11 = OutputOpenDrain::new(peripherals.GPIO0, Level::High, Pull::None);
         let delay = Delay::new();
 
         let dht11_reader = Dht11::new(od_for_dht11, delay);
